@@ -12,3 +12,6 @@
     engaging experience to your users. Background in computer science and ability as a full-stack developer 
     (front-end and back-end) allow me to create everything from small business websites to custom web applications.
     </p>
+    <p>
+    please open folder database when you find the file factuvalente.sql where is the table to use on this project
+    </p>
