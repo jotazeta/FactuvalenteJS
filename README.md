@@ -4,11 +4,16 @@
     I'm Jheyson Zapata, a Full Stack Developer
 </h4>
 <p class="pt-6 font-body justify leading-relaxed text-justify text-grey-20">
-    I am a freelance full-stack developer. I have a strong background as a software architect 
-    and have successfully led teams. I have worked with clients from diverse industries worldwide. 
-    I have successfully delivered over 20 projects for a range of clients, including solo founders, 
-    early stage startups, growing startups and digital agencies. I create fast, clean, and maintainable 
+    I am a full-stack developer. I have a strong background as a software architect 
+    and have successfully led teams. I create fast, clean, and maintainable 
     web applications, ready to scale from few users to thousands. I can help you deliver a seamless and 
     engaging experience to your users. Background in computer science and ability as a full-stack developer 
     (front-end and back-end) allow me to create everything from small business websites to custom web applications.
     </p>
+<p>
+please open folder database when you find the file factuvalente.sql where is the table to use on this project
+
+For this example i don't use Vue or React because the server not compatible with ssh, so I decide use all functions in manual with javascript, always given the sensation of reactive data information.
+
+This is a demo invoice PoS software created all by me, just for fun and practice my code.
+</p>
