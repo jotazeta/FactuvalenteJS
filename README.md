@@ -16,7 +16,7 @@
     please open folder database when you find the file factuvalente.sql where is the table to use on this project
     </p>
     <p>
-    For this example i don't use Vue or React because the server not compatible with ssh, so I decide use all functions in manual with javascript, always give the sensation of reactive data information.
+    For this example i don't use Vue or React because the server not compatible with ssh, so I decide use all functions in manual with javascript, always given the sensation of reactive data information.
     </p>
     <p>
     This is a demo invoice PoS software created all by me, just for fun and practice my code.
