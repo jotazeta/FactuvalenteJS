@@ -1492,7 +1492,7 @@ class ProductController extends Controller
                 $productsSimple = Product::with('carts')
                                         ->where('is_active', 1)
                                         ->where('activo', 1)
-                                        ->paginate(6);
+                                        ->paginate(8);
 
                 $productsCarts = Product::where('activo', 1)
                                     ->where('is_active', 1)

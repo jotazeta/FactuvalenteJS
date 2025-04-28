@@ -5,9 +5,9 @@
 <div class="loading hidden" id="loader1"></div>
 <div class="container mx-auto">
    
-    <div class="hidden lg:block md:block">
-        <div class="flex">
-            <div class="w-2/3 p-2 flex-auto min-h-[30rem] max-h-[700px] overflow-y-scroll" style="border-right:1px solid #9333ea;">
+    <div class="hidden lg:block md:block" id="desktop">
+        <div class="flex shadow-lg" id="invoiceArea">
+            <div class="w-2/3 p-2 flex-auto" style="border-right:1px solid #9333ea;">
                 
                 <div class="mt-4 flex">
                     <span class="flex-row bg-purple-400 p-1 pt-2 rounded m-px" id="searchName" onclick="triggerSearch(1)">
@@ -53,9 +53,9 @@
                 <div id="paginationProducts" class="flex flex-row justify-center"></div>
             </div>
             
-            <div class="w-1/3 flex-auto">
+            <div class="w-1/3 flex-auto min-w-[25rem]">
                 <span class="mt-4 p-2 flex text-purple-600">Factura de venta</span>
-                <div class="flex w-full">
+                <div class="flex p-[0.2rem] border border-purple-200 mr-5 ml-5 mb-px rounded">
                     <div class="wrapper">
                         <span class="flex-row p-1 pt-2 m-px">
                             Cliente:
@@ -85,7 +85,7 @@
                     <span class="float-right p-1 text-purple-600" id="initDeleteCart">Cancelar</span>
                     <span class="float-right p-1 text-purple-600 cursor-pointer hidden" id="deleteCart" onclick="deleteCart()">Cancelar</span>
                 </div>  
-                <div class="min-h-[15rem] justify-center items-center text-center bg-slate-200 hidden max-h-[400px] overflow-y-scroll" id="domFacturacion">
+                <div class="min-h-[15rem] justify-center items-center text-center bg-slate-200 hidden max-h-[400px] overflow-auto" id="domFacturacion">
                     
                 </div>
                 <div class="flow-root p-[0.2rem] border border-purple-200 mr-5 ml-5 mb-2 mt-2 rounded text-gray-800" id="divSubTotal">
@@ -182,13 +182,14 @@
                     <span class="float-right p-1 fontz text-5xl text-white" id="showTotalSell"></span>
                 </div>
             </div>
-        </div>
-        <div class="">
-            <div class="dropzone" id="dropzone">
-                <div class="draggable p-2 m-2 rounded" draggable="true" id="div1">Div 1</div>
-                <div class="draggable p-2 m-2 rounded" draggable="true" id="div2">Div 2</div>
-                <div class="draggable p-2 m-2 rounded" draggable="true" id="div3">Div 3</div>
-            </div>
+            <div class="flex-row">
+                <div class="dropzone flex-col" id="dropzone">
+                    <div class="draggable p-2 m-2 rounded" draggable="true" id="div1">1</div>
+                    <div class="draggable p-2 m-2 rounded" draggable="true" id="div2">2</div>
+                    <div class="draggable p-2 m-2 rounded" draggable="true" id="div3">3</div>
+                </div>
+            </div>             
+            
         </div>
     </div>
 
@@ -254,150 +255,72 @@
             console.log(urlDom, 'dir')
             var initProductsByName = document.getElementById('initProductsByName')
             var paginationProducts = document.getElementById('paginationProducts')
-            
-            //validate if urlDom is not 0
+
+            //validate if urlDom is not 0, deberia entrar solamente cuando se hace click en el paginador
             if(urlDom > 0){
                     console.log(urlDom, 'dale mano')
-                    axios.get('productByName?page='+urlDom+'')
-                .then((response) => {
-                    try {
-                        
-                        if(response.data.productsCarts){
-                            if(response.data.productsCarts.impuesto_global == 2){
-                                console.log('veo')
-                                initProductsByName.innerHTML = ''
-                                response.data.productsSimple.data.forEach(function(element){
-                                        if(element.carts.length !== 0){
-                                            initProductsByName.innerHTML += 
-                                            '<div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">'+
-                                            '<div class="absolute right-7 ...">'+
-                                                '<p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p>'+
-                                            '</div>'+
-                                                '<a onclick="addToCart('+element.id+','+element.stock+','+element.precio_base+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer bg-purple-200 rounded">'+
-                                                    '<img class="" src="'+element.image+'">'+
-                                                    '<div class="pt-3">'+
-                                                        '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                                    '</div>'+
-                                                    '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
-                                                    '<p class="pt-1 text-gray-900">Precio: $'+element.precio_base+'</p>'+
-                                                '</a>'+
-                                            '</div>'
-                                            return
-                                        }
-                                        initProductsByName.innerHTML += element.stock == 0 ? 
-                                            '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                                '<a onclick="addToCart('+element.id+','+element.stock+','+element.precio_base+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer border-4 border-purple-400 rounded" id="productoVentaNegativo">'+
-                                                    '<img class="" src="'+element.image+'">'+
-                                                    '<div class="pt-3">'+
-                                                        '<p class="capitalize">Nombre: '+element.title+'s</p>'+
-                                                    '</div>'+
-                                                    '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
-                                                    '<p class="pt-1 text-gray-900">Precio: $'+element.precio_base+'</p>'+
-                                                    '<span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>'+
-                                                '</a>'+
-                                            '</div>' : 
-                                            
-                                            '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                                '<a onclick="addToCart('+element.id+','+element.stock+','+element.precio_base+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer">'+
-                                                    '<img class="" src="'+element.image+'">'+
-                                                    '<div class="pt-3">'+
-                                                        '<p class="capitalize">Nombre: '+element.title+'s</p>'+
-                                                    '</div>'+
-                                                    '<p class="pt-1 text-gray-900 capitalize">Tipo: '+element.tipo+'</p>'+
-                                                    '<p class="pt-1 text-gray-900">Precio: $'+element.precio_base+'</p>'+
-                                                '</a>'+
-                                            '</div>'
-                                            if(element.venta_negativo == 'venta_negativo'){
-                                                var productoVentaNegativo = document.getElementById('productoVentaNegativo')
-                                                productoVentaNegativo.classList.add('border-dashed')
-                                                return
-                                            }
-                                            paginationProducts.innerHTML = ''
-                                            response.data.productsSimple.links.forEach(function(element){
-                                                var url = element.url
-                                                if(element.label == '&laquo; Previous' || element.label == 'Next &raquo;'){
-                                                    paginationProducts.innerHTML += ''
-                                                    return
-                                                }
-                                                paginationProducts.innerHTML += element.active == false ?
-                                                '<span class="cursor-pointer bg-purple-400 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>' :
-                                                '<span class="cursor-pointer bg-purple-600 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>'
-                                            })
-                                    
-                                    })
-                                    loader.style.display = 'none'
-                                return
+                axios.get('productByName?page=' + urlDom)
+                    .then((response) => {
+                        try {
+                            if (response.data.productsCarts && response.data.productsCarts.impuesto_global == 2) {
+                                console.log('veo');
+                                initProductsByName.innerHTML = '';
+                                response.data.productsSimple.data.forEach(function (element) {
+                                    if (element.carts.length !== 0) {
+                                        initProductsByName.innerHTML += `
+                                            <div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">
+                                                <div class="absolute right-7 ...">
+                                                    <p class="p-1 rounded-[24rem] text-white bg-purple-600">${element.carts[0].qty}</p>
+                                                </div>
+                                                <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${response.data.productsSimple.current_page}, '${element.impuesto}')" class="shadow p-2 cursor-pointer bg-purple-200 rounded">
+                                                    <img class="" src="${element.image}">
+                                                    <div class="pt-3">
+                                                        <p class="capitalize">Nombre: ${element.title}</p>
+                                                    </div>
+                                                </a>
+                                            </div>`;
+                                        return;
+                                    }
+                                    initProductsByName.innerHTML += element.stock == 0
+                                        ? `<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">
+                                                <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${response.data.productsSimple.current_page}, '${element.impuesto}')" class="shadow p-2 cursor-pointer border-4 border-purple-400 rounded" id="productoVentaNegativo">
+                                                    <img class="" src="${element.image}">
+                                                    <div class="pt-3">
+                                                        <p class="capitalize">Nombre: ${element.title}</p>
+                                                    </div>
+                                                    <p class="pt-1 text-gray-900 capitalize">tipo: ${element.tipo}</p>
+                                                    <p class="pt-1 text-gray-900">Precio: $${element.precio_base}</p>
+                                                    <span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>
+                                                </a>
+                                            </div>`
+                                        : `<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">
+                                                <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${response.data.productsSimple.current_page}, '${element.impuesto}')" class="shadow p-2 cursor-pointer">
+                                                    <img class="" src="${element.image}">
+                                                    <div class="pt-3">
+                                                        <p class="capitalize">Nombre: ${element.title}</p>
+                                                    </div>
+                                                    <p class="pt-1 text-gray-900 capitalize">Tipo: ${element.tipo}</p>
+                                                    <p class="pt-1 text-gray-900">Precio: $${element.precio_base}</p>
+                                                </a>
+                                            </div>`;
+                                });
+
+                                paginationProducts.innerHTML = '';
+                                response.data.productsSimple.links.forEach(function (element) {
+                                    if (element.label !== '&laquo; Previous' && element.label !== 'Next &raquo;') {
+                                        paginationProducts.innerHTML += element.active
+                                            ? `<span class="cursor-pointer bg-purple-600 text-white text-center rounded p-2 m-2" onclick="goPage('${element.label}')">${element.label}</span>`
+                                            : `<span class="cursor-pointer bg-purple-400 text-white text-center rounded p-2 m-2" onclick="goPage('${element.label}')">${element.label}</span>`;
+                                    }
+                                });
+
+                                loader.style.display = 'none';
+                                return;
                             }
-                            
+                        } catch (err) {
+                            console.log(err, 'err');
                         }
-                        //end if carts not empty
-                        console.log('muerte')
-                        initProductsByName.innerHTML = ''
-                        response.data.productsSimple.data.forEach(function(element){
-                                if(element.carts.length !== 0){
-                                        initProductsByName.innerHTML += 
-                                        '<div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">'+
-                                        '<div class="absolute right-7 ...">'+
-                                            '<p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p>'+
-                                        '</div>'+
-                                            '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer bg-purple-200 rounded">'+
-                                                '<img class="" src="'+element.image+'">'+
-                                                '<div class="pt-3">'+
-                                                    '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                                '</div>'+
-                                                '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
-                                                '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
-                                            '</a>'+
-                                        '</div>'
-                                        return
-                                    }
-                                initProductsByName.innerHTML += element.stock == 0 ? 
-                                    '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                        '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer border-4 border-purple-400 rounded" id="productoVentaNegativo">'+
-                                            '<img class="" src="'+element.image+'">'+
-                                            '<div class="pt-3">'+
-                                                '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                            '</div>'+
-                                            '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
-                                            '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
-                                            '<span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>'+
-                                        '</a>'+
-                                    '</div>' : 
-                                    
-                                    '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                        '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer">'+
-                                            '<img class="" src="'+element.image+'">'+
-                                            '<div class="pt-3">'+
-                                                '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                            '</div>'+
-                                            '<p class="pt-1 text-gray-900 capitalize">Tipo: '+element.tipo+'</p>'+
-                                            '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
-                                        '</a>'+
-                                    '</div>'
-                                    if(element.venta_negativo == 'venta_negativo'){
-                                        var productoVentaNegativo = document.getElementById('productoVentaNegativo')
-                                        productoVentaNegativo.classList.add('border-dashed')
-                                        return
-                                    }
-                                                        
-                        })
-                        
-                        paginationProducts.innerHTML = ''
-                        response.data.productsSimple.links.forEach(function(element){
-                                var url = element.url
-                                if(element.label == '&laquo; Previous' || element.label == 'Next &raquo;'){
-                                    paginationProducts.innerHTML += ''
-                                    return
-                                }
-                                paginationProducts.innerHTML += element.active == false ?
-                                '<span class="cursor-pointer bg-purple-400 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>' :
-                                '<span class="cursor-pointer bg-purple-600 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>'
-                            })
-                        loader.style.display = 'none'
-                    }catch(err) {
-                        console.log(err,'err')
-                    }
-                });
+                    });
 
                 loader.style.display = 'none'
                 return
@@ -494,54 +417,48 @@
                     // no haya productos en carrito y no tenga impuesto global activo (repetido para entendimiento)
                     initProductsByName.innerHTML = ''
                     response.data.productsSimple.data.forEach(function(element){
+                        const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page);
                         //inicio validación si hay productos en carrito para mostrar producto agregado y cantidad
                             if(element.carts.length !== 0){
-                                    initProductsByName.innerHTML += 
-                                    '<div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">'+
-                                    '<div class="absolute right-7 ...">'+
-                                        '<p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p>'+
-                                    '</div>'+
+                                console.log(element, 'back')
+                                    initProductsByName.innerHTML += element.venta_negativo == 'venta_negativo' ?
+                                    '<div class="w-full p-6 flex flex-row text-center relative">'+
+                                        '<div class="absolute right-7 ...">'+
+                                            '<p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p>'+
+                                        '</div>'+
+                                        '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer bg-purple-200 border-4 border-purple-400 rounded border-dashed">'+
+                                            '<img class="" src="'+element.image+'">'+
+                                            '<div class="pt-3">'+
+                                                '<p class="capitalize">Noddddddmbre: '+element.title+'</p>'+
+                                            '</div>'+
+                                            '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
+                                            '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
+                                            '<p class="pt-1 text-gray-900">Impuesto: '+element.impuesto+'</p>'+
+                                        '</a>'+
+                                    '</div>' :
+
+                                    '<div class="w-full p-6 flex flex-row text-center relative">'+
+                                        '<div class="absolute right-7 ...">'+
+                                            '<p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p>'+
+                                        '</div>'+
                                         '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer bg-purple-200 rounded">'+
                                             '<img class="" src="'+element.image+'">'+
                                             '<div class="pt-3">'+
-                                                '<p class="capitalize">Nombre: '+element.title+'</p>'+
+                                                '<p class="capitalize">Nombrffe: '+element.title+'</p>'+
                                             '</div>'+
                                             '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
                                             '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
                                             '<p class="pt-1 text-gray-900">Impuesto: '+element.impuesto+'</p>'+
                                         '</a>'+
                                     '</div>'
+                                    
                                     return
                                 }
                          //fin validación si hay productos en carrito para mostrar producto agregado y cantidad
-
+                                
                          //inicio validación si no hay productos en carrito para mostrar producto agregado y cantidad
                          // tambien para identificar si el producto tiene stock o no
-                            initProductsByName.innerHTML += element.stock == 0 ? 
-                                '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                    '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer border-4 border-purple-400 rounded" id="productoVentaNegativo">'+
-                                        '<img class="" src="'+element.image+'">'+
-                                        '<div class="pt-3">'+
-                                            '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                        '</div>'+
-                                        '<p class="pt-1 text-gray-900 capitalize">tipo: '+element.tipo+'</p>'+
-                                        '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
-                                        '<p class="pt-1 text-gray-900">Impuesto: '+element.impuesto+'</p>'+
-                                        '<span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>'+
-                                    '</a>'+
-                                '</div>' : 
-                                
-                                '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
-                                    '<a onclick="addToCart('+element.id+','+element.stock+','+element.sell_price+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer">'+
-                                        '<img class="" src="'+element.image+'">'+
-                                        '<div class="pt-3">'+
-                                            '<p class="capitalize">Nombre: '+element.title+'</p>'+
-                                        '</div>'+
-                                        '<p class="pt-1 text-gray-900 capitalize">Tipo: '+element.tipo+'</p>'+
-                                        '<p class="pt-1 text-gray-900">Precio: $'+element.sell_price+'</p>'+
-                                        '<p class="pt-1 text-gray-900">Impuesto: '+element.impuesto+'</p>'+
-                                    '</a>'+
-                                '</div>'
+                                initProductsByName.innerHTML += productCardHTML;
                                 // fin validación si no hay productos en carrito para mostrar producto agregado y cantidad
                                 // tambien para identificar si el producto tiene stock o no
 
@@ -874,7 +791,7 @@
                                 if (element.qty !== 1) {
                                     console.log('qty diferente de 1')
                                     domFacturacion.innerHTML +=
-                                        '<div class="flex justify-between p-2 m-2 border border-slate-300 rounded">' +
+                                        '<div class="flex justify-between p-2 m-2 border border-slate-300 rounded" id="elementDomFacturacion">' +
                                         '<div class="order-1 grid grid-flow-col grid-rows-2 max-w-[1rem]">' +
                                         '<span class="capitalize text-purple-600">' + element.product.title + '</span>' +
                                         '<span class="">$' + element.product.precio_base.toLocaleString('EN-US') + '</span>' +
@@ -991,28 +908,28 @@
                                     console.log('qty diferente de 1 sin impuesto checkCart')
                                     domFacturacion.innerHTML +=
                                         '<div class="flex justify-between p-2 m-2 border border-slate-300 rounded" id="step' + i + '" data-step="' + i + '">' +
-                                        '<div class="order-1 grid grid-flow-col grid-rows-2 max-w-[1rem]">' +
-                                        '<span class="capitalize text-purple-600">' + element.product.title + '</span>' +
-                                        '<span class="">$' + element.product.sell_price.toLocaleString('EN-US') + '</span>' +
-                                        '</div>' +
-                                        '<div class="order-2 mt-2">' +
-                                        '<span class="cursor-pointer" onclick="minusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
-                                        '<i class="fa fa-minus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<input type="text" value="' + element.qty + '" class="max-w-[3rem] text-center" id="modifyQTY' + i + '" onkeyup="triggerChangeQTY(this, ' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')"/>' +
-                                        '<span class="cursor-pointer" onclick="plusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
-                                        '<i class="fa fa-plus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<span class="cursor-pointer ml-4" onclick="deleteCurrentCart(' + element.id + ')">' +
-                                        '<i class="fa fa-trash bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<span class="cursor-pointer ml-4" onclick="doitSteps(' + i + ',' + element.id + ', ' + response.data[0].impuesto_global + ')">' +
-                                        '<i class="fa fa-pencil bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '</div>' +
-                                        '<div class="order-3 mt-2">' +
-                                        '<span class="">$' + price + '</span>' +
-                                        '</div>' +
+                                            '<div class="order-1 grid grid-flow-col grid-rows-2 max-w-[1rem]">' +
+                                                '<span class="capitalize text-purple-600">' + element.product.title + '</span>' +
+                                                '<span class="">$' + element.product.sell_price.toLocaleString('EN-US') + '</span>' +
+                                            '</div>' +
+                                            '<div class="order-2 mt-2">' +
+                                                '<span class="cursor-pointer" onclick="minusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
+                                                    '<i class="fa fa-minus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<input type="text" value="' + element.qty + '" class="max-w-[3rem] text-center" id="modifyQTY' + i + '" onkeyup="triggerChangeQTY(this, ' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')"/>' +
+                                                '<span class="cursor-pointer" onclick="plusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
+                                                    '<i class="fa fa-plus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<span class="cursor-pointer ml-4" onclick="deleteCurrentCart(' + element.id + ')">' +
+                                                    '<i class="fa fa-trash bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<span class="cursor-pointer ml-4" onclick="doitSteps(' + i + ',' + element.id + ', ' + response.data[0].impuesto_global + ')">' +
+                                                    '<i class="fa fa-pencil bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                            '</div>' +
+                                            '<div class="order-3 mt-2">' +
+                                                '<span class="">$' + price + '</span>' +
+                                            '</div>' +
                                         '</div>'
 
                                     i++
@@ -1020,28 +937,28 @@
                                     console.log('qty igual a 1 sin impuesto checkCart')
                                     domFacturacion.innerHTML +=
                                         '<div class="flex justify-between p-2 m-2 border border-slate-300 rounded" id="step' + i + '" data-step="' + i + '">' +
-                                        '<div class="order-1 grid grid-flow-col grid-rows-2 max-w-[1rem]">' +
-                                        '<span class="capitalize text-purple-600">' + element.product.title + '</span>' +
-                                        '<span class="">' + element.product.sell_price.toLocaleString('EN-US') + '</span>' +
-                                        '</div>' +
-                                        '<div class="order-2 mt-2">' +
-                                        '<span class="">' +
-                                        '<i class="fa fa-minus bg-purple-300 text-white p-px" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<input type="text" value="' + element.qty + '" class="max-w-[3rem] text-center id="modifyQTY' + i + '" onkeyup="triggerChangeQTY(this, ' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')"/>' +
-                                        '<span class="cursor-pointer" onclick="plusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
-                                        '<i class="fa fa-plus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<span class="cursor-pointer ml-4" onclick="deleteCurrentCart(' + element.id + ')">' +
-                                        '<i class="fa fa-trash bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '<span class="cursor-pointer ml-4" onclick="doitSteps(' + i + ',' + element.id + ', ' + response.data[0].impuesto_global + ')">' +
-                                        '<i class="fa fa-pencil bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
-                                        '</span>' +
-                                        '</div>' +
-                                        '<div class="order-3 mt-2">' +
-                                        '<span class="">$' + price + '</span>' +
-                                        '</div>' +
+                                            '<div class="order-1 grid grid-flow-col grid-rows-2 max-w-[1rem]">' +
+                                                '<span class="capitalize text-purple-600">' + element.product.title + '</span>' +
+                                                '<span class="">$' + element.product.sell_price.toLocaleString('EN-US') + '</span>' +
+                                            '</div>' +
+                                            '<div class="order-2 mt-2">' +
+                                                '<span class="">' +
+                                                    '<i class="fa fa-minus bg-purple-300 text-white p-px" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<input type="text" value="' + element.qty + '" class="max-w-[3rem] text-center id="modifyQTY' + i + '" onkeyup="triggerChangeQTY(this, ' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')"/>' +
+                                                '<span class="cursor-pointer" onclick="plusCantidad(' + element.id + ',' + element.product.id + ',' + element.product.stock + ',' + element.product.sell_price + ')">' +
+                                                    '<i class="fa fa-plus bg-purple-600 text-white p-px" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<span class="cursor-pointer ml-4" onclick="deleteCurrentCart(' + element.id + ')">' +
+                                                    '<i class="fa fa-trash bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                                '<span class="cursor-pointer ml-4" onclick="doitSteps(' + i + ',' + element.id + ', ' + response.data[0].impuesto_global + ')">' +
+                                                    '<i class="fa fa-pencil bg-purple-600 text-white rounded text-sm pl-1 pr-1" aria-hidden="true"></i>' +
+                                                '</span>' +
+                                            '</div>' +
+                                            '<div class="order-3 mt-2">' +
+                                                '<span class="">$' + price + '</span>' +
+                                            '</div>' +
                                         '</div>'
                                     i++
                                 }
@@ -1547,7 +1464,7 @@
                                                                
                         response.data.productsSimple.data.forEach(function(element){
 
-                                    if(element.image !== 'http://localhost/factuvalente/public/uploads/products'){
+                            if(element.image !== 'http://localhost/factuvalente/public/uploads/products'){
                                         resultProductsByBarcode.innerHTML += element.stock == 0 ? 
                                         '<div class="w-full p-6 flex flex-row text-center max-w-[17rem]">'+
                                     '<a onclick="addToCart('+element.id+','+element.stock+','+element.precio_base+','+response.data.productsSimple.current_page+',\'' + element.impuesto + '\')" class="shadow p-2 cursor-pointer border-4 border-purple-400 rounded" id="productoVentaNegativo">'+
@@ -1599,6 +1516,28 @@
                
             
         }
+
+    function generateProductCard(element, currentPage) {
+        const isOutOfStock = element.stock === 0;
+        const isVentaNegativo = element.venta_negativo === 'venta_negativo';
+        const borderClass = isOutOfStock ? "border-4 border-purple-400" : "";
+        const borderDashClass = isVentaNegativo ? "border-dashed" : "";
+        const outOfStockText = isOutOfStock ? '<span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>' : "";
+
+            return `
+                <div class="w-full p-6 flex flex-row text-center max-w-[17rem]">
+                    <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${currentPage}, '${element.impuesto}')" id="productoVentaNegativo"
+                    class="shadow p-2 cursor-pointer ${borderClass} ${borderDashClass} rounded">
+                        <img class="" src="${element.image}" id="imgAir">
+                        <div class="pt-3">
+                            <p class="capitalize text-pruple-600">Nombre: ${element.title}</p>
+                        </div>
+                        <p class="pt-1 text-purple-600 capitalize">Tipo: ${element.tipo}</p>
+                        <p class="pt-1 text-purple-600">Precio: $${element.sell_price}</p>
+                    </a>
+                </div>
+            `;
+    }   
 
         function triggerSearch(data){
 
@@ -2195,5 +2134,69 @@
             background-color: #f3e8ff;
         }
     </style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const desktop = document.getElementById("desktop");
+        const initProductsByName = document.getElementById("initProductsByName");
 
+        function adjustElements() {
+            const screenWidth = window.innerWidth; // Get the screen width
+            const screenHeight = window.innerHeight; // Get the screen height
+
+            
+
+            // Adjust initProductsByName dimensions
+            const maxProductWidth = 300; // Approximate width of each product card (in pixels)
+            const padding = 20; // Approximate padding/margin between product cards (in pixels)
+            const columns = Math.floor((screenWidth - padding) / (maxProductWidth + padding)); // Calculate columns
+            initProductsByName.style.gridTemplateColumns = `repeat(${columns}, 1fr)`; // Set grid columns
+            initProductsByName.style.height = `${screenHeight * 0.7}px`; // 40% of screen height
+            initProductsByName.style.overflow = "scroll"; // Prevent scroll overflow
+        }
+
+        // Adjust elements on page load
+        adjustElements();
+
+        // Adjust elements on window resize
+        window.addEventListener("resize", adjustElements);
+    });
+</script>
+
+<style>
+    #desktop {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        transition: all 0.3s ease; /* Smooth transition for resizing */
+        box-sizing: border-box; /* Include padding and border in the element's dimensions */
+        padding: 10px; /* Optional: Add padding for spacing */
+    }
+
+    #initProductsByName {
+        display: grid;
+        gap: 20px; /* Space between grid items */
+        max-width: 100%; /* Ensure it doesn't exceed the screen width */
+        margin: 0 auto; /* Center the grid */
+    }
+</style>
+<style>
+    #initProductsByName img#imgAir {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    #initProductsByName {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    @media (min-width: 1200px) {
+        #initProductsByName {
+            grid-template-columns: repeat(8, 1fr);
+        }
+    }
+</style>
 @endsection
