@@ -10,6 +10,7 @@
     engaging experience to your users. Background in computer science and ability as a full-stack developer 
     (front-end and back-end) allow me to create everything from small business websites to custom web applications.
     </p>
+<<<<<<< HEAD
 <p>
 please open folder database when you find the file factuvalente.sql where is the table to use on this project
 
@@ -17,3 +18,14 @@ For this example i don't use Vue or React because the server not compatible with
 
 This is a demo invoice PoS software created all by me, just for fun and practice my code.
 </p>
+=======
+    <p>
+    please open folder database when you find the file factuvalente.sql where is the table to use on this project
+    </p>
+    <p>
+    For this example i don't use Vue or React because the server not compatible with ssh, so I decide use all functions in manual with javascript, always given the sensation of reactive data information.
+    </p>
+    <p>
+    This is a demo invoice PoS software created all by me, just for fun and practice my code.
+    </p>
+>>>>>>> c2c7ac7cc316ab4c7976a9da41df30e1caf02c29
