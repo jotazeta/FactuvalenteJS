@@ -249,23 +249,18 @@
             }
         }
 
-
+        
         function productByName(){
             var urlDom = document.getElementById('urlDom').value
-            console.log(urlDom, 'dir')
             var initProductsByName = document.getElementById('initProductsByName')
             var paginationProducts = document.getElementById('paginationProducts')
-
-          
-
-         
 
 
             console.log('como otras veces')
             //si no esta activo el impuesto global y hay productos en carrito, entonces se va a mostrar esta información
             // debido a que carga la cantidad del producto asignado asi como variantes propias de lo que se está vendiendo
             var inputSearchNameValue = document.getElementById('inputSearchName').value
-            axios.get('productByName')
+            axios.get('productByName?page='+urlDom+'')
             .then((response) => {
                 //init trycatch para manejar errores de la petición
                 try {
@@ -317,34 +312,49 @@
         }
 
         function goPage(url){
-            console.log(url, 'entra')
             var initProductsByName = document.getElementById('initProductsByName')
             var paginationProducts = document.getElementById('paginationProducts')
 
             if(url){
                 axios.get('productByName?page='+url+'')
-            .then((response) => {
-                try {
-                    console.log(response.data.productsSimple, 'el lacra')
-                    var i = 0
-         
-                 //init validación si impuesto global no está activo y hay productos en carrito
-                    initProductsByName.innerHTML = ''
-                    response.data.productsSimple.data.forEach(function(element){
-                        const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page);
-                        initProductsByName.innerHTML += productCardHTML;
-                        
-                    })
+                    .then((response) => {
+                        try {
+                
+                            initProductsByName.innerHTML = ''
+                            response.data.productsSimple.data.forEach(function(element){
+                                const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page);
+                                initProductsByName.innerHTML += productCardHTML;
+                                
+                            })
+                            //inicio detección de paginación para productos
+                    //colocamos paginationProducts en blanco para evitar duplicados
+                    paginationProducts.innerHTML = ''
+                    //recorremos (productsSimple) los links de la paginación y los mostramos en la vista
+                    response.data.productsSimple.links.forEach(function(element){
+                            var url = element.url
+                            //inicio script para eliminar los botones next y previous de la paginación
+                            if(element.label == '&laquo; Previous' || element.label == 'Next &raquo;'){
+                                paginationProducts.innerHTML += ''
+                                return
+                            }
+                            //fin script para eliminar los botones next y previous de la paginación
 
-                    //end validación si impuesto global no está activo y hay productos en carrito
+                            //inicio script para mostrar los botones de paginación con condición de si están activos o no
+                            // y asignar la función goPage para que cambie de página al hacer click en el botón
+                            paginationProducts.innerHTML += element.active == false ?
+                            '<span class="cursor-pointer bg-purple-400 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>' :
+                            '<span class="cursor-pointer bg-purple-600 text-white text-center rounded p-2 m-2" onclick="goPage(\'' + element.label + '\')">'+element.label+'</span>'
+                            //fin script para mostrar los botones de paginación con condición de si están activos o no
+                            // y asignar la función goPage para que cambie de página al hacer click en el botón
+                        })
+                        //fin recorrer (productsSimple) los links de la paginación y los mostramos en la vista
 
-                }
-                catch(err) {
-                    console.log(err,'err')
-                }
-            });
+                        }
+                        catch(err) {
+                            console.log(err,'err')
+                        }
+                    });
             }
-            console.log(url, 'url')
         }
 
         // Function to check the cart and update the UI accordingly
@@ -1203,7 +1213,7 @@
         const haveCartCant = isHavecart ? '<div class="absolute"><p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p></div>' : "";
 
             return `
-                <div class="w-full p-6 flex flex-row text-center max-w-[17rem]">
+                <div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">
                     ${haveCartCant}
                     <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${currentPage}, '${element.impuesto}')" id="productoVentaNegativo"
                     class="shadow p-2 cursor-pointer ${borderClass} ${borderDashClass} ${haveCartClass} rounded">
