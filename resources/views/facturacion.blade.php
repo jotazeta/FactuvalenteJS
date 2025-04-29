@@ -256,8 +256,6 @@
             var initProductsByName = document.getElementById('initProductsByName')
             var paginationProducts = document.getElementById('paginationProducts')
 
-
-            console.log('como otras veces')
             //si no esta activo el impuesto global y hay productos en carrito, entonces se va a mostrar esta información
             // debido a que carga la cantidad del producto asignado asi como variantes propias de lo que se está vendiendo
             var inputSearchNameValue = document.getElementById('inputSearchName').value
@@ -272,13 +270,11 @@
                     // y no tiene impuesto global activo. Resumen, esta es la vista que mostraremos siempre y cuando
                     // no haya productos en carrito y no tenga impuesto global activo (repetido para entendimiento)
                     initProductsByName.innerHTML = ''
-                    console.log(response.data, 'el lacraman')
                     response.data.productsSimple.data.forEach(function(element){
                         const productsCarts = response.data.productsCarts;
                         if(productsCarts){
                             
                             var triggerImpuesto = productsCarts.impuesto_global;
-                            console.log(triggerImpuesto, 'qlq lacra')
                             if(triggerImpuesto == 2){
                                 impuestoGlobal.checked = true
                             }
@@ -332,7 +328,15 @@
                 
                             initProductsByName.innerHTML = ''
                             response.data.productsSimple.data.forEach(function(element){
-                                const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page, response.data.productsCarts.impuesto_global);
+                                const productsCarts = response.data.productsCarts;
+                                if(productsCarts){
+                                    
+                                    var triggerImpuesto = productsCarts.impuesto_global;
+                                    if(triggerImpuesto == 2){
+                                        impuestoGlobal.checked = true
+                                    }
+                                }
+                                const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page, triggerImpuesto);
                                 initProductsByName.innerHTML += productCardHTML;
                                 
                             })
@@ -1212,8 +1216,6 @@
         }
 
     function generateProductCard(element, currentPage, impuestoGlobal) {
-        console.log(element, 'element')
-        console.log(impuestoGlobal, 'impuestoGlobal')
         const isOutOfStock = element.stock === 0;
         const isVentaNegativo = element.venta_negativo === 'venta_negativo';
         const isHavecart = element.carts.length !== 0;
@@ -1225,7 +1227,7 @@
         const haveCartCant = isHavecart ? '<div class="absolute"><p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p></div>' : "";
         const haveImpuestoGlobal = isImpuestoGlobal ? '<p class="pt-1 text-purple-600">Precio: '+element.sell_price+'</p>' : '<p class="pt-1 text-purple-600">Precio: '+element.precio_base+'</p>';
             return `
-                <div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">
+                <div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative max-h-[20rem]">
                     ${haveCartCant}
                     <a onclick="addToCart(${element.id}, ${element.stock}, ${element.precio_base}, ${currentPage}, '${element.impuesto}')" id="productoVentaNegativo"
                     class="shadow p-2 cursor-pointer ${borderClass} ${borderDashClass} ${haveCartClass} rounded">
