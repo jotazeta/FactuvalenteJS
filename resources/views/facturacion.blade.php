@@ -252,6 +252,7 @@
         
         function productByName(){
             var urlDom = document.getElementById('urlDom').value
+            var impuestoGlobal = document.getElementById('impuestoGlobal')
             var initProductsByName = document.getElementById('initProductsByName')
             var paginationProducts = document.getElementById('paginationProducts')
 
@@ -271,9 +272,18 @@
                     // y no tiene impuesto global activo. Resumen, esta es la vista que mostraremos siempre y cuando
                     // no haya productos en carrito y no tenga impuesto global activo (repetido para entendimiento)
                     initProductsByName.innerHTML = ''
-                    console.log(response.data.productsSimple, 'el lacraman')
+                    console.log(response.data, 'el lacraman')
                     response.data.productsSimple.data.forEach(function(element){
-                        const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page);
+                        const productsCarts = response.data.productsCarts;
+                        if(productsCarts){
+                            
+                            var triggerImpuesto = productsCarts.impuesto_global;
+                            console.log(triggerImpuesto, 'qlq lacra')
+                            if(triggerImpuesto == 2){
+                                impuestoGlobal.checked = true
+                            }
+                        }
+                        const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page, triggerImpuesto);
                         initProductsByName.innerHTML += productCardHTML;
                                                      
                     })
@@ -322,7 +332,7 @@
                 
                             initProductsByName.innerHTML = ''
                             response.data.productsSimple.data.forEach(function(element){
-                                const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page);
+                                const productCardHTML = generateProductCard(element, response.data.productsSimple.current_page, response.data.productsCarts.impuesto_global);
                                 initProductsByName.innerHTML += productCardHTML;
                                 
                             })
@@ -1201,17 +1211,19 @@
             
         }
 
-    function generateProductCard(element, currentPage) {
-        console.log(currentPage, 'currentPage')
+    function generateProductCard(element, currentPage, impuestoGlobal) {
+        console.log(element, 'element')
+        console.log(impuestoGlobal, 'impuestoGlobal')
         const isOutOfStock = element.stock === 0;
         const isVentaNegativo = element.venta_negativo === 'venta_negativo';
         const isHavecart = element.carts.length !== 0;
+        const isImpuestoGlobal = impuestoGlobal === 1;
         const borderClass = isOutOfStock ? "border-4 border-purple-400" : "";
         const borderDashClass = isVentaNegativo ? "border-dashed" : "";
         const haveCartClass = isHavecart ? "bg-purple-300" : "";
         const outOfStockText = isOutOfStock ? '<span class="pt-1 text-purple-600">PRODUCTO AGOTADO</span>' : "";
         const haveCartCant = isHavecart ? '<div class="absolute"><p class="p-1 rounded-[24rem] text-white bg-purple-600">'+element.carts[0].qty+'</p></div>' : "";
-
+        const haveImpuestoGlobal = isImpuestoGlobal ? '<p class="pt-1 text-purple-600">Precio: '+element.sell_price+'</p>' : '<p class="pt-1 text-purple-600">Precio: '+element.precio_base+'</p>';
             return `
                 <div class="w-full p-6 flex flex-row text-center max-w-[17rem] relative">
                     ${haveCartCant}
@@ -1222,7 +1234,7 @@
                             <p class="capitalize text-pruple-600">Nombre: ${element.title}</p>
                         </div>
                         <p class="pt-1 text-purple-600 capitalize">Tipo: ${element.tipo}</p>
-                        <p class="pt-1 text-purple-600">Precio: $${element.sell_price}</p>
+                        ${haveImpuestoGlobal}
                     </a>
                 </div>
             `;
