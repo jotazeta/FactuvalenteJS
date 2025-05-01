@@ -1850,7 +1850,7 @@
             
 
             // Adjust initProductsByName dimensions
-            const maxProductWidth = 300; // Approximate width of each product card (in pixels)
+            const maxProductWidth = 350; // Approximate width of each product card (in pixels)
             const padding = 20; // Approximate padding/margin between product cards (in pixels)
             const columns = Math.floor((screenWidth - padding) / (maxProductWidth + padding)); // Calculate columns
             initProductsByName.style.gridTemplateColumns = `repeat(${columns}, 1fr)`; // Set grid columns
@@ -1886,9 +1886,10 @@
 <style>
     #initProductsByName img#imgAir {
         width: 100%;
-        aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: 8px;
+        margin: 0 auto; /* Center the grid */
+
     }
 
     #initProductsByName {
