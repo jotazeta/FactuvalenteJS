@@ -395,6 +395,8 @@
             axios.get('checkCart')
                 .then((response) => {
                     try {
+                        // Save the response data in localStorage
+                        localStorage.setItem('cartData', JSON.stringify(response.data));
                         // If the cart is empty, reset the UI to its initial state
                         if (response.data.length == 0) {
                             domFacturacion.classList.add('hidden');
@@ -1614,44 +1616,36 @@
             }
         }
 
-        function deleteCart(cart_id){
-            axios.post('deleteCart', {
-                        cart_id: cart_id
-                    })
-                    .then(function (response) {
-                      if (response.data == 'no'){
-                        Swal.fire({
-                            title: 'Error!',
-                                  text: 'Comuniquese con el administrador.',
-                                  icon: 'error',
-                                  timer: 2000,
-                                  showConfirmButton: false
-                              });
-                        return
-                      }
-
-                      if(response.data == 'eliminado'){                                                
-                            Swal.fire({
-                                  title: 'Eliminados!',
-                                  text: 'Productos eliminados del carrito',
-                                  icon: 'success',
-                                  timer: 2000,
-                                  showConfirmButton: false,
-                              });
-                             checkCart()
-                            return
-                      }
-                      
-                    })
-                    .catch(function (error) {
-                      if (error.status == 500){
-                        console.log(error)
-                              return
-                      }
-                      
-                    })
-
-            return
+        // Function to delete all carts for the current cashier
+        function deleteCart() {
+            // Retrieve the cart data from localStorage
+            const cartData = JSON.parse(localStorage.getItem('cartData'));
+        
+            if (cartData && cartData.length > 0) {
+                // Extract all cart IDs into an array
+                const cartIds = cartData.map(cart => cart.id);
+        
+                // Send a single POST request with all cart IDs
+                axios.post('deleteCart', {
+                    cart_ids: cartIds // Send all cart IDs in a single request
+                })
+                .then((response) => {
+                    if (response.data.message === 'eliminado') {
+                        console.log('All carts deleted successfully.');
+                        // Clear the cart data from localStorage after deletion
+                        localStorage.removeItem('cartData');
+                        // Optionally, refresh the UI
+                        checkCart();
+                    } else {
+                        console.error('Failed to delete carts:', response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error deleting carts:', error);
+                });
+            } else {
+                console.log('No carts to delete.');
+            }
         }
 
         function impuestoGeneral(item){

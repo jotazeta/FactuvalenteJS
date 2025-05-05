@@ -312,24 +312,29 @@ class FacturacionController extends Controller
     public function deleteCart(Request $request)
     {
         try {
-                // find cart
-                $cart = Cart::where('cashier_id', auth()->user()->id)
-                            ->get();
-
-                   if($cart){
-                        foreach ($cart as $item) {
-                            // delete cart
-                            $item->delete();
-                        }
-
-                    return 'eliminado';
-           
-                   }
-                   
-            } catch (customException $e) {
-            //display custom message
-            return 'no';
-          }
+            // Retrieve the cart IDs from the request
+            $cartIds = $request->input('cart_ids');
+    
+            // Check if cart IDs are provided
+            if (empty($cartIds) || !is_array($cartIds)) {
+                return response()->json(['message' => 'No hay productos en carrito'], 400);
+            }
+    
+            // Delete all carts with the provided IDs
+            $deleted = Cart::where('cashier_id', auth()->user()->id)
+                           ->whereIn('id', $cartIds)
+                           ->delete();
+    
+            // Check if any carts were deleted
+            if ($deleted > 0) {
+                return response()->json(['message' => 'eliminado'], 200);
+            } else {
+                return response()->json(['message' => 'No se encontraron carritos para eliminar'], 404);
+            }
+        } catch (\Exception $e) {
+            // Handle any exceptions and return an error message
+            return response()->json(['message' => 'Error al eliminar los carritos', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function changeQTY(Request $request)
